@@ -2,7 +2,7 @@
 
 Takes an image and converts it to ASCII art.
 
-## Example:
+## Example (might not work on mobile):
 ```
 
 
