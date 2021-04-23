@@ -1,4 +1,3 @@
-import time
 import sys
 import os
 
@@ -36,7 +35,6 @@ def txt_to_ascii_flip(average):
     
     return return_char
 
-
 def txt_to_ascii(average):
     return_char = '  '
     if average < 255 / 12 * 1:
@@ -70,6 +68,14 @@ input_path = input('file path: ')
 
 img = Image.open(input_path)
 img = img.resize((int(input("x axis size: ")), int(input("y axis size: "))))
+
+flipped = input('do you want to flip the colors (y/n)? ')
+
+if flipped == 'y':
+    flipped = True
+elif flipped == 'n':
+    flipped = False
+
 img = img.convert('RGB')
 
 output = '\n\n'
@@ -78,7 +84,10 @@ for x in range(img.size[0]):
     for y in range(img.size[1]):
         pixel = img.getpixel((y, x))
         average = (pixel[0] + pixel[1] + pixel[2]) / 3
-        output += txt_to_ascii(average)
+        if flipped:
+            output += txt_to_ascii_flip(average)
+        else:
+            output += txt_to_ascii(average)
     output += '\n'
 
 if not os.path.exists('output/'):
