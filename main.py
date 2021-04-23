@@ -84,9 +84,9 @@ flipped = input('do you want to flip the colors (y/n)? ')
 output = '\n\n'
 
 # iterate over each pixel
-for x in range(img.size[0]):
-    for y in range(img.size[1]):
-        pixel = img.getpixel((y, x)) # get values of pixel in (r, g, b) shape
+for y in range(img.size[1]):
+    for x in range(img.size[0]):
+        pixel = img.getpixel((x, y)) # get pixel values in (r, g, b) shape
         average = (pixel[0] + pixel[1] + pixel[2]) / 3
         if flipped == 'y':
             output += txt_to_ascii_flip(average)
