@@ -94,6 +94,20 @@ for y in range(img.size[1]):
             output += txt_to_ascii(average)
     output += '\n'
 
+output = output.split("\n")
+clean_output = output
+
+for i_index, i in enumerate(output):
+    for ch in reversed(i):
+        if ch == " ":
+            clean_output[i_index] = clean_output[i_index].removesuffix(" ")
+        else:
+            break
+
+string_output = ""
+for each in clean_output:
+    string_output += each + "\n"
+
 # create output path if it doesn't exist yet
 if not os.path.exists('output/'):
     os.makedirs('output/')
@@ -104,5 +118,5 @@ filename = input_path.split('/')[-1].split('.')[0]
 # create new file (or open it if it's already there), 
 # and write the output to it (it does not wipe previous output, you can compare them that way)
 output_file = open("output/{}.txt".format(filename), 'a')
-output_file.write(output)
+output_file.write(string_output)
 output_file.close()
