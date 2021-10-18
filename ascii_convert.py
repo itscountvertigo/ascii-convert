@@ -80,7 +80,7 @@ def ascii_convert(input_path, resize_x, resize_y, contrast_factor, flipped):
         for x in range(img.size[0]):
             pixel = img.getpixel((x, y)) # get pixel values in (r, g, b) shape
             average = (pixel[0] + pixel[1] + pixel[2]) / 3
-            if flipped == 'y':
+            if flipped:
                 output += txt_to_ascii_flip(average)
             else:
                 output += txt_to_ascii(average)
