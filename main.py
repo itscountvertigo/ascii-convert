@@ -1,8 +1,5 @@
-import sys
 import os
-
-clear_console = 'clear' if os.name == 'posix' else 'CLS'
-
+import argparse
 from PIL import Image, ImageEnhance
 
 def txt_to_ascii_flip(average):
@@ -68,63 +65,70 @@ def txt_to_ascii(average):
     
     return return_char
 
-input_path = input('file path: ')
+def ascii_convert(input_path, resize_x, resize_y, contrast_factor, flipped):
+    img = Image.open(input_path)
+    img = img.resize((resize_x, resize_y))
+    img = img.convert('RGB')
 
-# opens given image, asks for new dimensions and resizes to them (so the art isn't too big), and converts to RGB (so getpixel works)
-img = Image.open(input_path)
+    # adjust contrast
+    enhancer = ImageEnhance.Contrast(img)
+    img = enhancer.enhance(float(contrast_factor))
 
-resize_x = int(input("x axis size: "))
-resize_y = int(input("y axis size: "))
+    output = "\n"
+    
+    for y in range(img.size[1]):
+        for x in range(img.size[0]):
+            pixel = img.getpixel((x, y)) # get pixel values in (r, g, b) shape
+            average = (pixel[0] + pixel[1] + pixel[2]) / 3
+            if flipped == 'y':
+                output += txt_to_ascii_flip(average)
+            else:
+                output += txt_to_ascii(average)
+        output += '\n'
 
-img = img.resize((resize_x, resize_y))
-img = img.convert('RGB')
+    output = output.split("\n")
+    clean_output = output
 
-contrast_factor = input("Would you like to increase contrast? 1 = no chance, >1 = increase, <1 = decrease. ")
+    for idx, line in enumerate(output):
+        for ch in reversed(line):
+            if ch == " ":
+                clean_output[idx] = clean_output[idx].removesuffix(" ")
+            else:
+                break
 
-enhancer = ImageEnhance.Contrast(img)
-img = enhancer.enhance(float(contrast_factor))
+    string_output = ""
+    for line in clean_output:
+        string_output += line + "\n"
 
-# used to determine wether txt_to_ascii() or txt_to_ascii_flip() is used 
-flipped = input('do you want to flip the colors (y/n)? ')
+    return string_output
 
-# two linebreaks in case there is previous output in the file (since it only writes, it doesnt wipe the previous runs. that way you can compare.)
-output = '\n\n'
+def write_to_file(text, input_path):
+    # create output path if it doesn't exist yet
+    if not os.path.exists('output/'):
+        os.makedirs('output/')
 
-# iterate over each pixel
-for y in range(img.size[1]):
-    for x in range(img.size[0]):
-        pixel = img.getpixel((x, y)) # get pixel values in (r, g, b) shape
-        average = (pixel[0] + pixel[1] + pixel[2]) / 3
-        if flipped == 'y':
-            output += txt_to_ascii_flip(average)
-        else:
-            output += txt_to_ascii(average)
-    output += '\n'
+    # gets name of file without the folder its in or its extension
+    filename = input_path.split('/')[-1].split('.')[0]
 
-output = output.split("\n")
-clean_output = output
+    # create new file (or open it if it's already there), 
+    # and write the output to it (it does not wipe previous output, you can compare them that way)
+    output_file = open("output/{}.txt".format(filename), 'a')
+    # output_file.write(f"Size: {resize_x}, {resize_y} - Contrast: {contrast_factor}")
+    output_file.write(text)
+    output_file.close()
 
-for i_index, i in enumerate(output):
-    for ch in reversed(i):
-        if ch == " ":
-            clean_output[i_index] = clean_output[i_index].removesuffix(" ")
-        else:
-            break
+def main():
+    parser = argparse.ArgumentParser()
 
-string_output = ""
-for each in clean_output:
-    string_output += each + "\n"
+    parser.add_argument('-i', '--input', type=str, required=True, help="The input file's location, eg. 'images/logo.png'")
+    parser.add_argument('-x', '--resize_x', type=int, required=True, help="The new size of the x-axis")
+    parser.add_argument('-y', '--resize_y', type=int, required=True, help="The new size of the y-axis")
+    parser.add_argument('-c', '--contrast', type=float, required=False, default=1, help="Factor of how much the contrast should change, >1 = increase, <1 = decrease")
+    parser.add_argument('-f', '--flipped', action="store_true", default='n', help="whether or not you want to flip/invert the color")
 
-# create output path if it doesn't exist yet
-if not os.path.exists('output/'):
-    os.makedirs('output/')
+    args = parser.parse_args()
+    text = ascii_convert(args.input, args.resize_x, args.resize_y, args.contrast, args.flipped)
+    write_to_file(text, args.input)
 
-# gets name of file without the folder its in or its extension
-filename = input_path.split('/')[-1].split('.')[0]
-
-# create new file (or open it if it's already there), 
-# and write the output to it (it does not wipe previous output, you can compare them that way)
-output_file = open("output/{}.txt".format(filename), 'a')
-output_file.write(f"Size: {resize_x}, {resize_y} - Contrast: {contrast_factor}")
-output_file.write(string_output)
-output_file.close()
+if __name__ == "__main__":
+    main()

@@ -42,12 +42,15 @@ Takes an image and converts it to ASCII art.
 ```
 ## How to use
 
-- Run the file
-- Paste/type in a file location
-- Give it new smaller dimensions (remember to keep the correct aspect ratio). Somewhere around 50x50 should be fine for less detailed images, images with detail may need more.
-- Tell it whether or not you want the colors to be flipped (with 'y' or 'n'). If you don't know, just try both out!
+To use this, all you have to do is run the file with the arguments you want. To run it, use the following flags:
 
-Now look in the newly created output folder, it should be in a text file named after the original file.
+```python main.py -i "FILE_PATH" -x X_SIZE -y Y_SIZE [-c CONTRAST] [-f]```
+
+or their longer forms 
+
+```python main.py --input "FILE_PATH" --resize_x X_SIZE --resize_y Y_SIZE [--contrast CONTRAST] [--flipped]```
+
+Flags between [brackets] are optional. If you can't figure something out, run the file with only the ```-h``` or ```--help``` flag.
 
 ## How to install
 
