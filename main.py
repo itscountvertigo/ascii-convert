@@ -3,9 +3,7 @@ import os
 
 clear_console = 'clear' if os.name == 'posix' else 'CLS'
 
-from PIL import Image
-from PIL import ImageSequence
-
+from PIL import Image, ImageEnhance
 
 def txt_to_ascii_flip(average):
     # flipped version of regular conversion function. this takes a character's average value and returns an ASCII character
@@ -74,8 +72,17 @@ input_path = input('file path: ')
 
 # opens given image, asks for new dimensions and resizes to them (so the art isn't too big), and converts to RGB (so getpixel works)
 img = Image.open(input_path)
-img = img.resize((int(input("x axis size: ")), int(input("y axis size: "))))
+
+resize_x = int(input("x axis size: "))
+resize_y = int(input("y axis size: "))
+
+img = img.resize((resize_x, resize_y))
 img = img.convert('RGB')
+
+contrast_factor = input("Would you like to increase contrast? 1 = no chance, >1 = increase, <1 = decrease. ")
+
+enhancer = ImageEnhance.Contrast(img)
+img = enhancer.enhance(float(contrast_factor))
 
 # used to determine wether txt_to_ascii() or txt_to_ascii_flip() is used 
 flipped = input('do you want to flip the colors (y/n)? ')
@@ -118,5 +125,6 @@ filename = input_path.split('/')[-1].split('.')[0]
 # create new file (or open it if it's already there), 
 # and write the output to it (it does not wipe previous output, you can compare them that way)
 output_file = open("output/{}.txt".format(filename), 'a')
+output_file.write(f"Size: {resize_x}, {resize_y} - Contrast: {contrast_factor}")
 output_file.write(string_output)
 output_file.close()
