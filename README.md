@@ -54,3 +54,7 @@ Flags between [brackets] are optional. If you can't figure something out, run th
 ## How to install
 
 All you'll need is to have Python 3 and the PIL library installed with ```pip install PIL```. 
+
+## Sources
+
+I've taken the long character set from http://paulbourke.net/dataformats/asciiart/
