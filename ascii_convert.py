@@ -2,68 +2,15 @@ import os
 import argparse
 from PIL import Image, ImageEnhance
 
-def txt_to_ascii_flip(average):
-    # flipped version of regular conversion function. this takes a character's average value and returns an ASCII character
+# characters = ".,-~:;=*!#$@"
 
-    return_char = '  '
-    if average < 255 / 12 * 1:
-        return_char = ' @'
-    elif average < 255 / 12 * 2:
-        return_char = ' $'
-    elif average < 255 / 12 * 3:
-        return_char = ' #'
-    elif average < 255 / 12 * 4:
-        return_char = ' *'
-    elif average < 255 / 12 * 5:
-        return_char = ' !'
-    elif average < 255 / 12 * 6:
-        return_char = ' ='
-    elif average < 255 / 12 * 7:
-        return_char = ' ;'
-    elif average < 255 / 12 * 8:
-        return_char = ' :'
-    elif average < 255 / 12 * 9:
-        return_char = ' ~'
-    elif average < 255 / 12 * 10:
-        return_char = ' -'
-    elif average < 255 / 12 * 11:
-        return_char = ' ,'
-    elif average < 255 / 12 * 12:
-        return_char = ' .'
-    
-    return return_char
-
-def txt_to_ascii(average):
+def value_to_ascii(value, characters):
     # this takes a character's average value and returns an ASCII character. 
-    # I may need to change this to a cleaner solution, but for now this works fine.
 
-    return_char = '  '
-    if average < 255 / 12 * 1:
-        return_char = ' .'
-    elif average < 255 / 12 * 2:
-        return_char = ' ,'
-    elif average < 255 / 12 * 3:
-        return_char = ' -'
-    elif average < 255 / 12 * 4:
-        return_char = ' ~'
-    elif average < 255 / 12 * 5:
-        return_char = ' :'
-    elif average < 255 / 12 * 6:
-        return_char = ' ;'
-    elif average < 255 / 12 * 7:
-        return_char = ' ='
-    elif average < 255 / 12 * 8:
-        return_char = ' *'
-    elif average < 255 / 12 * 9:
-        return_char = ' !'
-    elif average < 255 / 12 * 10:
-        return_char = ' #'
-    elif average < 255 / 12 * 11:
-        return_char = ' $'
-    elif average < 255 / 12 * 12:
-        return_char = ' @'
-    
-    return return_char
+    for idx, char in enumerate(characters):
+        if value < 255 / len(characters) * idx:
+            return f" {char}"
+    return "  "
 
 def ascii_convert(input_path, resize_x, resize_y, contrast_factor, flipped):
     img = Image.open(input_path)
@@ -81,9 +28,9 @@ def ascii_convert(input_path, resize_x, resize_y, contrast_factor, flipped):
             pixel = img.getpixel((x, y)) # get pixel values in (r, g, b) shape
             average = (pixel[0] + pixel[1] + pixel[2]) / 3
             if flipped:
-                output += txt_to_ascii_flip(average)
+                output += value_to_ascii(average, "@$#!*=;:~-,.")
             else:
-                output += txt_to_ascii(average)
+                output += value_to_ascii(average, ".,-~:;=*!#$@")
         output += '\n'
 
     output = output.split("\n")
@@ -124,7 +71,7 @@ def main():
     parser.add_argument('-x', '--resize_x', type=int, required=True, help="The new size of the x-axis")
     parser.add_argument('-y', '--resize_y', type=int, required=True, help="The new size of the y-axis")
     parser.add_argument('-c', '--contrast', type=float, required=False, default=1, help="Factor of how much the contrast should change, >1 = increase, <1 = decrease")
-    parser.add_argument('-f', '--flipped', action="store_true", default='n', help="whether or not you want to flip/invert the color")
+    parser.add_argument('-f', '--flipped', action="store_true", default=False, help="whether or not you want to flip/invert the color")
 
     args = parser.parse_args()
     text = ascii_convert(args.input, args.resize_x, args.resize_y, args.contrast, args.flipped)
